@@ -3,222 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZenSleep Cycle Calculator</title>
+    <title>The Best Sleep App 🌙</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --container-bg: #1e293b;
-            --primary: #818cf8;
-            --primary-hover: #6366f1;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
+            --bg-color: #09090b;
+            --surface-color: #18181b;
+            --surface-hover: #27272a;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            
+            /* Status Colors */
+            --danger: #ef4444;    /* 1-2 cycles */
+            --warning: #f59e0b;   /* 3 cycles */
+            --success: #10b981;   /* 4-6 cycles */
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        .container {
-            background-color: var(--container-bg);
+        .app-container {
+            background-color: var(--surface-color);
             padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            max-width: 400px;
-            width: 90%;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .header {
             text-align: center;
+            margin-bottom: 2rem;
         }
 
         h1 {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.8rem;
+            margin: 0;
+            color: var(--text-main);
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        p {
+        .subtitle {
             color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .settings-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .settings-card label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .settings-card input[type="number"] {
+            background: var(--bg-color);
+            border: 1px solid #3f3f46;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            width: 60px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .action-group {
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.02);
         }
 
         .btn {
             background-color: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.05rem;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            margin: 10px 0;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
         }
 
         .btn:hover {
             background-color: var(--primary-hover);
-        }
-
-        .divider {
-            margin: 20px 0;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .divider span {
-            position: absolute;
-            background-color: var(--container-bg);
-            padding: 0 10px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
+            transform: translateY(-1px);
         }
 
         .time-input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
+            padding: 14px;
+            margin-bottom: 10px;
             background-color: var(--bg-color);
-            border: 1px solid #334155;
-            border-radius: 8px;
+            border: 1px solid #3f3f46;
+            border-radius: 12px;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color-scheme: dark;
             box-sizing: border-box;
+            text-align: center;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #3f3f46;
+            margin: 0 10px;
         }
 
         .results {
-            margin-top: 20px;
-            text-align: left;
+            margin-top: 25px;
             display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .results h3 {
-            color: var(--accent);
-            margin-bottom: 10px;
+            margin: 0 0 15px 0;
+            font-size: 1.2rem;
+            color: white;
+            text-align: center;
         }
 
         .time-list {
             list-style: none;
             padding: 0;
             margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .time-list li {
             background-color: var(--bg-color);
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid transparent;
+            border-right: 1px solid #27272a;
+            border-top: 1px solid #27272a;
+            border-bottom: 1px solid #27272a;
+        }
+
+        .result-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid var(--primary);
+            margin-bottom: 6px;
         }
 
         .time-val {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             font-weight: bold;
+            letter-spacing: -0.5px;
         }
 
-        .cycle-info {
-            font-size: 0.8rem;
+        .cycle-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .result-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
 
-        .optimal {
-            border-left-color: #34d399; /* Green for optimal */
-        }
+        /* Status Modifiers */
+        .status-danger { border-left-color: var(--danger); }
+        .status-danger .cycle-badge { background-color: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+        
+        .status-warning { border-left-color: var(--warning); }
+        .status-warning .cycle-badge { background-color: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+        
+        .status-success { border-left-color: var(--success); }
+        .status-success .cycle-badge { background-color: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🌙 ZenSleep</h1>
-        <p>Wake up refreshed by sleeping in 90-minute cycles. (We factor in 15 minutes to fall asleep).</p>
-
-        <button class="btn" onclick="calculateWakeUp()">If I sleep right now...</button>
-
-        <div class="divider">
-            <span>OR</span>
+    <div class="app-container">
+        <div class="header">
+            <h1>The Best Sleep App</h1>
+            <div class="subtitle">Optimize your 90-minute sleep cycles</div>
         </div>
 
-        <p>I need to wake up at:</p>
-        <input type="time" id="wakeTime" class="time-input">
-        <button class="btn" onclick="calculateBedTime()">Calculate Bedtime</button>
+        <div class="settings-card">
+            <label for="fallAsleepTime">Time to fall asleep (mins):</label>
+            <input type="number" id="fallAsleepTime" value="15" min="0" max="60">
+        </div>
+
+        <div class="action-group">
+            <button class="btn" onclick="calculateWakeUp()">If I sleep RIGHT NOW...</button>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <div class="action-group">
+            <input type="time" id="targetTime" class="time-input">
+            <button class="btn" onclick="calculateBedTime()">If I need to wake up at...</button>
+        </div>
 
         <div id="resultsArea" class="results">
-            <h3 id="resultTitle">You should wake up at:</h3>
+            <h3 id="resultTitle">Calculated Times</h3>
             <ul class="time-list" id="timeList">
                 </ul>
         </div>
     </div>
 
     <script>
-        // Standard sleep cycle is 90 mins, plus 15 mins to fall asleep
         const CYCLE_MINUTES = 90;
-        const FALL_ASLEEP_MINUTES = 15;
+
+        // Labels and statuses based on number of cycles
+        const CYCLE_CONFIG = {
+            1: { label: "Power Nap", status: "danger" },
+            2: { label: "Emergency", status: "danger" },
+            3: { label: "Rough Night", status: "warning" },
+            4: { label: "Minimum", status: "success" },
+            5: { label: "Optimal ⭐", status: "success" },
+            6: { label: "Extra Rest", status: "success" }
+        };
+
+        function getFallAsleepMinutes() {
+            let val = parseInt(document.getElementById('fallAsleepTime').value);
+            return isNaN(val) ? 15 : val;
+        }
 
         function formatTime(date) {
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
         function calculateWakeUp() {
+            const fallAsleepMin = getFallAsleepMinutes();
             const now = new Date();
-            // Add 15 mins to fall asleep
-            now.setMinutes(now.getMinutes() + FALL_ASLEEP_MINUTES);
+            // Start calculation from the moment they actually fall asleep
+            const fallAsleepTime = new Date(now.getTime() + (fallAsleepMin * 60000));
 
             let times = [];
             
-            // Calculate 4, 5, and 6 cycles
-            for (let i = 4; i <= 6; i++) {
-                const wakeTime = new Date(now.getTime() + (i * CYCLE_MINUTES * 60000));
+            // Calculate 1 to 6 cycles
+            for (let i = 1; i <= 6; i++) {
+                const wakeTime = new Date(fallAsleepTime.getTime() + (i * CYCLE_MINUTES * 60000));
                 times.push({
                     time: formatTime(wakeTime),
                     cycles: i,
-                    hours: (i * 1.5),
-                    isOptimal: i === 5 || i === 6 // 7.5 or 9 hours is optimal
+                    sleepHours: (i * 1.5).toFixed(1),
+                    config: CYCLE_CONFIG[i]
                 });
             }
 
-            displayResults("If you sleep now, wake up at:", times.reverse());
+            // We show shortest sleep first for "Sleep Now"
+            displayResults("Set your alarm for one of these times:", times);
         }
 
         function calculateBedTime() {
-            const timeInput = document.getElementById('wakeTime').value;
+            const timeInput = document.getElementById('targetTime').value;
             if (!timeInput) {
                 alert("Please select a time first!");
                 return;
             }
 
+            const fallAsleepMin = getFallAsleepMinutes();
             const [hours, minutes] = timeInput.split(':');
             const target = new Date();
             target.setHours(hours, minutes, 0, 0);
 
             let times = [];
 
-            // Calculate backwards for 4, 5, and 6 cycles (plus 15 mins to fall asleep)
-            for (let i = 4; i <= 6; i++) {
-                const bedTime = new Date(target.getTime() - (i * CYCLE_MINUTES * 60000) - (FALL_ASLEEP_MINUTES * 60000));
+            // Calculate backwards 1 to 6 cycles
+            for (let i = 1; i <= 6; i++) {
+                // Subtract cycle time AND time needed to fall asleep
+                const bedTime = new Date(target.getTime() - (i * CYCLE_MINUTES * 60000) - (fallAsleepMin * 60000));
                 times.push({
                     time: formatTime(bedTime),
                     cycles: i,
-                    hours: (i * 1.5),
-                    isOptimal: i === 5 || i === 6
+                    sleepHours: (i * 1.5).toFixed(1),
+                    config: CYCLE_CONFIG[i]
                 });
             }
 
-            displayResults("To wake up then, head to bed at:", times.reverse());
+            // We reverse so that the longest sleep (optimal) shows at the top
+            displayResults("You should get into bed at:", times.reverse());
         }
 
         function displayResults(title, timeArray) {
@@ -231,17 +346,30 @@
 
             timeArray.forEach(item => {
                 const li = document.createElement('li');
-                if (item.isOptimal) li.classList.add('optimal');
+                li.className = `status-${item.config.status}`;
                 
                 li.innerHTML = `
-                    <span class="time-val">${item.time}</span>
-                    <span class="cycle-info">${item.cycles} cycles (${item.hours} hrs) ${item.isOptimal ? '⭐' : ''}</span>
+                    <div class="result-top">
+                        <span class="time-val">${item.time}</span>
+                        <span class="cycle-badge">${item.config.label}</span>
+                    </div>
+                    <div class="result-bottom">
+                        <span>${item.cycles} Cycle${item.cycles > 1 ? 's' : ''}</span>
+                        <span>${item.sleepHours} hrs total sleep</span>
+                    </div>
                 `;
                 timeList.appendChild(li);
             });
 
+            // Trigger reflow to restart animation
+            resultsArea.style.display = 'none';
+            void resultsArea.offsetWidth; 
             resultsArea.style.display = 'block';
+            
+            // Scroll to results smoothly
+            resultsArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     </script>
 </body>
 </html>
+
