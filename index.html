@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenSleep Cycle Calculator</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .divider {
+            margin: 20px 0;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .divider span {
+            position: absolute;
+            background-color: var(--container-bg);
+            padding: 0 10px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .time-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background-color: var(--bg-color);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            color-scheme: dark;
+            box-sizing: border-box;
+        }
+
+        .results {
+            margin-top: 20px;
+            text-align: left;
+            display: none;
+        }
+
+        .results h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .time-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .time-list li {
+            background-color: var(--bg-color);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .time-val {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .cycle-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .optimal {
+            border-left-color: #34d399; /* Green for optimal */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🌙 ZenSleep</h1>
+        <p>Wake up refreshed by sleeping in 90-minute cycles. (We factor in 15 minutes to fall asleep).</p>
+
+        <button class="btn" onclick="calculateWakeUp()">If I sleep right now...</button>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <p>I need to wake up at:</p>
+        <input type="time" id="wakeTime" class="time-input">
+        <button class="btn" onclick="calculateBedTime()">Calculate Bedtime</button>
+
+        <div id="resultsArea" class="results">
+            <h3 id="resultTitle">You should wake up at:</h3>
+            <ul class="time-list" id="timeList">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        // Standard sleep cycle is 90 mins, plus 15 mins to fall asleep
+        const CYCLE_MINUTES = 90;
+        const FALL_ASLEEP_MINUTES = 15;
+
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function calculateWakeUp() {
+            const now = new Date();
+            // Add 15 mins to fall asleep
+            now.setMinutes(now.getMinutes() + FALL_ASLEEP_MINUTES);
+
+            let times = [];
+            
+            // Calculate 4, 5, and 6 cycles
+            for (let i = 4; i <= 6; i++) {
+                const wakeTime = new Date(now.getTime() + (i * CYCLE_MINUTES * 60000));
+                times.push({
+                    time: formatTime(wakeTime),
+                    cycles: i,
+                    hours: (i * 1.5),
+                    isOptimal: i === 5 || i === 6 // 7.5 or 9 hours is optimal
+                });
+            }
+
+            displayResults("If you sleep now, wake up at:", times.reverse());
+        }
+
+        function calculateBedTime() {
+            const timeInput = document.getElementById('wakeTime').value;
+            if (!timeInput) {
+                alert("Please select a time first!");
+                return;
+            }
+
+            const [hours, minutes] = timeInput.split(':');
+            const target = new Date();
+            target.setHours(hours, minutes, 0, 0);
+
+            let times = [];
+
+            // Calculate backwards for 4, 5, and 6 cycles (plus 15 mins to fall asleep)
+            for (let i = 4; i <= 6; i++) {
+                const bedTime = new Date(target.getTime() - (i * CYCLE_MINUTES * 60000) - (FALL_ASLEEP_MINUTES * 60000));
+                times.push({
+                    time: formatTime(bedTime),
+                    cycles: i,
+                    hours: (i * 1.5),
+                    isOptimal: i === 5 || i === 6
+                });
+            }
+
+            displayResults("To wake up then, head to bed at:", times.reverse());
+        }
+
+        function displayResults(title, timeArray) {
+            const resultsArea = document.getElementById('resultsArea');
+            const resultTitle = document.getElementById('resultTitle');
+            const timeList = document.getElementById('timeList');
+
+            resultTitle.textContent = title;
+            timeList.innerHTML = '';
+
+            timeArray.forEach(item => {
+                const li = document.createElement('li');
+                if (item.isOptimal) li.classList.add('optimal');
+                
+                li.innerHTML = `
+                    <span class="time-val">${item.time}</span>
+                    <span class="cycle-info">${item.cycles} cycles (${item.hours} hrs) ${item.isOptimal ? '⭐' : ''}</span>
+                `;
+                timeList.appendChild(li);
+            });
+
+            resultsArea.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
